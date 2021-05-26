@@ -19,6 +19,7 @@
    * [ ] [Quanvolutional Neural Networks](https://pennylane.ai/qml/demos/tutorial_quanvolution.html).
    * [ ] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Learning to learn with quantum neural networks](https://pennylane.ai/qml/demos/learning2learn.html).
+   * [ ] [TensorFlow Quantum](https://www.tensorflow.org/quantum/overview).
  
  4. Learn Music Theory to be able to find even more ideas for generating Quantum Music.
     * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
