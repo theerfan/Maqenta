@@ -4,8 +4,8 @@
 
 ## Roadmap
 1. Learn about GANs
-   * [ ] Watch [this talk by Ian Goodfellow](https://www.youtube.com/watch?v=HGYYEUSm-0Q). 
-   * [ ] Watch [this talk by Seth Lloyd](https://www.youtube.com/watch?v=5nfN8xT3Z8g).
+   * [x] Watch [Ian Goodfellow: Generative Adversarial Networks](https://www.youtube.com/watch?v=HGYYEUSm-0Q). 
+   * [x] Watch [Seth Lloyd: Quantum Generative Adversarial Networks](https://www.youtube.com/watch?v=5nfN8xT3Z8g).
    * [x] Go through [PennyLane's Tutorial of QuGANs](https://pennylane.ai/qml/demos/tutorial_QGAN.html).
    * [ ] Go through [GANSynth tutorial on Magenta](https://magenta.tensorflow.org/gansynth).
    * [ ] Port GANSynth to Quantum.
@@ -20,6 +20,7 @@
    * [ ] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Learning to learn with quantum neural networks](https://pennylane.ai/qml/demos/learning2learn.html).
    * [ ] [TensorFlow Quantum](https://www.tensorflow.org/quantum/overview).
+   * [ ] [Quantum support vector machine for big data classification](https://arxiv.org/abs/1307.0471).
  
  4. Learn Music Theory to be able to find even more ideas for generating Quantum Music.
     * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
