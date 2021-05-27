@@ -22,5 +22,11 @@
    * [ ] [TensorFlow Quantum](https://www.tensorflow.org/quantum/overview).
    * [ ] [Quantum support vector machine for big data classification](https://arxiv.org/abs/1307.0471).
  
- 4. Learn Music Theory to be able to find even more ideas for generating Quantum Music.
+4. Learn Music Theory to be able to find even more ideas for generating Quantum Music.
     * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
+    
+ 5. Read these papers
+    * [ ] [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
+    * [ ] [rogressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196).
+    * [ ] [Adversarial Audio Synthesis](https://arxiv.org/abs/1802.04208).
+    * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
