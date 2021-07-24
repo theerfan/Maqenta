@@ -15,8 +15,8 @@
    * [ ] Implement [Quantum Long Short-Term memory](https://arxiv.org/abs/2009.01783) in PennyLane.
 
 3. Learn more about other QML Methods that could be possible for generating music.
+   * [x] [Quanvolutional Neural Networks](https://pennylane.ai/qml/demos/tutorial_quanvolution.html).
    * [ ] [Quantum models as Fourier series](https://pennylane.ai/qml/demos/tutorial_expressivity_fourier_series.html).
-   * [ ] [Quanvolutional Neural Networks](https://pennylane.ai/qml/demos/tutorial_quanvolution.html).
    * [ ] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Learning to learn with quantum neural networks](https://pennylane.ai/qml/demos/learning2learn.html).
    * [ ] [TensorFlow Quantum](https://www.tensorflow.org/quantum/overview).
@@ -30,3 +30,4 @@
     * [ ] [rogressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196).
     * [ ] [Adversarial Audio Synthesis](https://arxiv.org/abs/1802.04208).
     * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
+    * [ ] [Recurrent Quantum Neural Networks](https://arxiv.org/abs/2006.14619).
