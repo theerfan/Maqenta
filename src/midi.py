@@ -3,12 +3,15 @@ from maq_utils.keras import to_categorical
 import glob, pickle
 import numpy as np
 from pathlib import Path
+from torch import Tensor
 
 notes_dir = "data/notes.pk"
 
 
 class Midi:
-    def __init__(self):
+    def __init__(self, seq_length):
+        self.seq_length = seq_length
+
         if Path(notes_dir).is_file():
             self.notes = pickle.load(open(notes_dir, "rb"))
         else:
@@ -53,8 +56,6 @@ class Midi:
         if not n_vocab:
             n_vocab = len(set(notes))
 
-        sequence_length = 100
-
         # get all pitch names
         pitchnames = sorted(set(item for item in notes))
 
@@ -65,19 +66,19 @@ class Midi:
         network_output = []
 
         # create input sequences and the corresponding outputs
-        for i in range(0, len(self.notes) - sequence_length, 1):
-            sequence_in = self.notes[i : i + sequence_length]
-            sequence_out = self.notes[i + sequence_length]
+        for i in range(0, len(self.notes) - self.seq_length, 1):
+            sequence_in = self.notes[i : i + self.seq_length]
+            sequence_out = self.notes[i + self.seq_length]
             network_input.append([note_to_int[char] for char in sequence_in])
             network_output.append(note_to_int[sequence_out])
 
         n_patterns = len(network_input)
 
         # reshape the input into a format compatible with LSTM layers
-        network_input = np.reshape(network_input, (n_patterns, sequence_length, 1))
+        network_input = np.reshape(network_input, (n_patterns, self.seq_length, 1))
         # normalize input
         network_input = network_input / float(n_vocab)
 
         network_output = to_categorical(network_output)
 
-        return (network_input, network_output)
+        return (Tensor(network_input), Tensor(network_output))
