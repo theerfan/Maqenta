@@ -11,7 +11,7 @@ import numpy as np
 class LSTMusic(nn.Module):
     def __init__(
         self,
-        n_vocab=8,
+        n_vocab=None,
         input_dim=1,
         hidden_dim=512,
         n_qubits=4,
@@ -134,7 +134,7 @@ class LSTMusic(nn.Module):
             # generate 500 notes
             for _ in range(n_notes):
                 prediction_input = np.reshape(pattern, (1, len(pattern), 1))
-                prediction_input = prediction_input / float(n_vocab)
+                # prediction_input = prediction_input / float(n_vocab)
 
                 (h_t, prediction) = self.model.predict(prediction_input)
 

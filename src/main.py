@@ -11,15 +11,16 @@ import matplotlib.pyplot as plt
 seq_length = 25
 n_epochs = 10
 cutoff = 20
+n_qubits = 4
 
-model_name = f"lstm-seq{seq_length}-cut{cutoff}-epcs{n_epochs}"
+model_name = f"lstm-seq{seq_length}-cut{cutoff}-epcs{n_epochs}-qu{n_qubits}"
 model_str = f"saved_models/{model_name}.pt"
 
 print("Initialized Midi")
 midi = Midi(seq_length)
 
 print("Initialized LSTM")
-lstm = LSTMusic(hidden_dim=midi.n_vocab)
+lstm = LSTMusic(hidden_dim=midi.n_vocab, n_qubits=n_qubits)
 
 if Path(model_str).is_file():
     print("Loading model")
@@ -29,17 +30,17 @@ if Path(model_str).is_file():
 else:
     print("Training LSTM")
     train_history = lstm.train(
-        midi.network_input, midi.network_output, n_epochs=n_epochs, cutoff=cutoff
+        True, midi.network_input, midi.network_output, n_epochs=n_epochs, cutoff=cutoff
     )
     torch.save(lstm.state_dict(), model_str)
 
 print("Generating notes")
 notes = lstm.generate_notes(
-    midi.network_input, midi.int_to_note, midi.n_vocab, n_notes=100
+    midi.network_input, midi.int_to_note, midi.n_vocab, n_notes=20
 )
 
 print("Saving as MIDI file.")
-midi.create_midi_from_model(notes, f"{model_name}_generated.mid")
+midi.create_midi_from_model(notes, f"generated_songs/{model_name}_generated.mid")
 
 
 # train()
