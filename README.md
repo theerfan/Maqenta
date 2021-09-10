@@ -12,25 +12,32 @@
    * [ ] Port GANSynth to Quantum.
 
 2. Learn about RNNs & LSTMs 
+   * [x] Implement [Quantum Long Short-Term memory](https://arxiv.org/abs/2009.01783) in PennyLane.
+   * [x] Implement a music generation algorithm using the above.
    * [ ] Go through [RNN music generation tutorial on Magenta](https://magenta.tensorflow.org/2016/06/10/recurrent-neural-network-generation-tutorial).
    * [ ] Port the above to Quantum.
-   * [ ] Implement [Quantum Long Short-Term memory](https://arxiv.org/abs/2009.01783) in PennyLane.
 
 3. Learn more about other QML Methods that could be possible for generating music.
    * [x] [Quanvolutional Neural Networks](https://pennylane.ai/qml/demos/tutorial_quanvolution.html).
    * [ ] [Quantum models as Fourier series](https://pennylane.ai/qml/demos/tutorial_expressivity_fourier_series.html).
    * [ ] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Learning to learn with quantum neural networks](https://pennylane.ai/qml/demos/learning2learn.html).
-   * [ ] [TensorFlow Quantum](https://www.tensorflow.org/quantum/overview).
    * [ ] [Quantum support vector machine for big data classification](https://arxiv.org/abs/1307.0471).
  
 4. Learn Music Theory to be able to find even more ideas for generating Quantum Music.
-    * [x] [Learn music theory in half an hour](https://www.youtube.com/watch?v=rgaTLrZGlk0).
-    * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
+   * [x] [Learn music theory in half an hour](https://www.youtube.com/watch?v=rgaTLrZGlk0).
+   * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
     
  5. Read these papers
-    * [ ] [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
-    * [ ] [Progressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196).
-    * [ ] [Adversarial Audio Synthesis](https://arxiv.org/abs/1802.04208).
-    * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
-    * [ ] [Recurrent Quantum Neural Networks](https://arxiv.org/abs/2006.14619).
+   * [x] [Recurrent Quantum Neural Networks](https://arxiv.org/abs/2006.14619).
+   * [ ] [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
+   * [ ] [Progressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196).
+   * [ ] [Adversarial Audio Synthesis](https://arxiv.org/abs/1802.04208).
+   * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
+
+7. Current Development
+   * [ ] Change the code such that it could be run on A GPU.
+   * [ ] Test the code with high cutoff value and epoch number to investigate convergence.
+   * [ ] Develop the idea for QuGAN (and EQGAN?) 
+   * [ ] Add the easily module of QuGraph
+   * [ ] The Issue of monotony (same offset between notes). 
