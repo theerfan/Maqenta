@@ -1,9 +1,7 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 
 import pennylane as qml
-from pennylane import numpy as np
 from pennylane.templates import embeddings as emb
 from pennylane.templates import layers as lay
 
@@ -19,8 +17,8 @@ Layer = Union[
 ]
 
 
-class LSTM_Q(nn.Module):
-    def lstm_portion(
+class QLSTM(nn.Module):
+    def quantum_op(
         self,
         wires,
         embedding: Embedding = emb.AngleEmbedding,
@@ -44,7 +42,7 @@ class LSTM_Q(nn.Module):
         return_state=False,
         backend="default.qubit",
     ):
-        super(LSTM_Q, self).__init__()
+        super(QLSTM, self).__init__()
         self.n_inputs = input_size
         self.hidden_size = hidden_size
         self.concat_size = self.n_inputs + self.hidden_size
@@ -72,19 +70,19 @@ class LSTM_Q(nn.Module):
         self.dev_output = qml.device(self.backend, wires=self.wires_output)
 
         self.qlayer_forget = qml.QNode(
-            self.lstm_portion(self.wires_forget), self.dev_forget, interface="torch"
+            self.quantum_op(self.wires_forget), self.dev_forget, interface="torch"
         )
 
         self.qlayer_input = qml.QNode(
-            self.lstm_portion(self.wires_input), self.dev_input, interface="torch"
+            self.quantum_op(self.wires_input), self.dev_input, interface="torch"
         )
 
         self.qlayer_update = qml.QNode(
-            self.lstm_portion(self.wires_update), self.dev_update, interface="torch"
+            self.quantum_op(self.wires_update), self.dev_update, interface="torch"
         )
 
         self.qlayer_output = qml.QNode(
-            self.lstm_portion(self.wires_output), self.dev_output, interface="torch"
+            self.quantum_op(self.wires_output), self.dev_output, interface="torch"
         )
 
         weight_shapes = {"weights": (n_qlayers, n_qubits)}
@@ -106,8 +104,10 @@ class LSTM_Q(nn.Module):
         recurrent_activation -> sigmoid
         activation -> tanh
         """
-        if len(x.size()) == 2:
-            x = x.reshape(x.size()[0], 1, x.size()[1])
+        # Automatically assumes single batch
+        if len(x.shape) == 2:
+            x = x.reshape(1, x.shape[0], x.shape[1])
+        
         if self.batch_first is True:
             batch_size, seq_length, features_size = x.size()
         else:
@@ -147,36 +147,21 @@ class LSTM_Q(nn.Module):
             h_t = o_t * torch.tanh(c_t)
 
             hidden_seq.append(h_t.unsqueeze(0))
+
         hidden_seq = torch.cat(hidden_seq, dim=0)
         hidden_seq = hidden_seq.transpose(0, 1).contiguous()
-        return hidden_seq, (h_t, c_t)
 
-    def train(model, inputs, outputs, n_epochs):
-        # Same as categorical cross entropy, who would've thought?!
-        loss_function = nn.NLLLoss()
-        optimizer = optim.SGD(model.parameters(), lr=0.1)
-
-        history = {
-            'loss': []
-        }
-        for epoch in range(n_epochs):
-            losses = []
-            for note_series, next_note in zip(inputs, outputs):
-                # Step 1. Remember that Pytorch accumulates gradients.
-                # We need to clear them out before each instance
-                model.zero_grad()
-
-                # Step 2. Run our forward pass.
-                note_scores, _ = model(note_series)
-
-                # Step 4. Compute the loss, gradients, and update the parameters by
-                #  calling optimizer.step()
-                loss = loss_function(note_scores, next_note)
-                loss.backward()
-                optimizer.step()
-                losses.append(float(loss))
-                
-            avg_loss = np.mean(losses)
-            history['loss'].append(avg_loss)
-            print("Epoch {} / {}: Loss = {:.3f}".format(epoch+1, n_epochs, avg_loss))
-        return history
+        # Wow, such pseudo-keras!
+        if self.return_state:
+            if self.return_sequences:
+                return hidden_seq, (h_t, c_t)
+            else:
+                return (h_t, c_t)
+        else:
+            if self.return_sequences:
+                return hidden_seq
+            else:
+                return h_t
+    
+    def predict(self, x, init_states=None):
+        return self.forward(x, init_states)

@@ -1,6 +1,5 @@
 import numpy as np
 
-
 def to_categorical(y, num_classes=None, dtype="float32"):
     y = np.array(y, dtype="int")
     input_shape = y.shape
