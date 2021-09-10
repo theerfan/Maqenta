@@ -115,8 +115,8 @@ class QLSTM(nn.Module):
 
         hidden_seq = []
         if init_states is None:
-            h_t = torch.zeros(batch_size, self.hidden_size)  # hidden state (output)
-            c_t = torch.zeros(batch_size, self.hidden_size)  # cell state
+            h_t = torch.zeros(batch_size, self.hidden_size) # device? # hidden state (output)
+            c_t = torch.zeros(batch_size, self.hidden_size) # device? # cell state
         else:
             # for now we ignore the fact that in PyTorch you can stack multiple RNNs
             # so we take only the first elements of the init_states tuple init_states[0][0], init_states[1][0]

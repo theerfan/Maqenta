@@ -3,13 +3,14 @@ from maq_utils.keras import to_categorical
 import glob, pickle
 import numpy as np
 from pathlib import Path
-from torch import Tensor
+from torch import tensor
 
 notes_dir = "data/notes.pk"
 
 class Midi:
-    def __init__(self, seq_length):
+    def __init__(self, seq_length, device):
         self.seq_length = seq_length
+        self.device = device
 
         if Path(notes_dir).is_file():
             self.notes = pickle.load(open(notes_dir, "rb"))
@@ -81,7 +82,7 @@ class Midi:
 
         # network_output = to_categorical(network_output)
 
-        return (Tensor(network_input), Tensor(network_output))
+        return (tensor(network_input, device=self.device), tensor(network_output, device=self.device))
 
     def create_midi_from_model(self, prediction_output, filename):
         """ convert the output from the prediction to notes and create a midi file
