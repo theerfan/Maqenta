@@ -7,7 +7,6 @@ from torch import Tensor
 
 notes_dir = "data/notes.pk"
 
-
 class Midi:
     def __init__(self, seq_length):
         self.seq_length = seq_length
