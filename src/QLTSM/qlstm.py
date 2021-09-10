@@ -7,6 +7,7 @@ from pennylane.templates import layers as lay
 
 from typing import Union
 
+
 Embedding = Union[emb.AngleEmbedding, emb.AmplitudeEmbedding, emb.BasisEmbedding]
 Layer = Union[
     lay.BasicEntanglerLayers,
