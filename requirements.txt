@@ -1,0 +1,5 @@
+music21==6.7.1
+matplotlib==3.4.2
+PennyLane==0.16.0
+torch==1.9.0
+wheel==0.37.0
