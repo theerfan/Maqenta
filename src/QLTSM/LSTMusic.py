@@ -1,4 +1,5 @@
 import torch
+from torch.cuda import device_count
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
@@ -16,6 +17,7 @@ class LSTMusic(nn.Module):
         hidden_dim=512,
         n_qubits=4,
         backend="default.qubit",
+        device="cpu",
     ):
         super(LSTMusic, self).__init__()
         self.hidden_dim = hidden_dim
@@ -57,7 +59,8 @@ class LSTMusic(nn.Module):
                 n_qubits=n_qubits,
                 backend=backend,
                 return_state=True,
-            )
+                device=device,
+            ).to(device)
         else:
             print("Generator will use Classical LSTM")
             self.model = nn.LSTM(input_dim, hidden_dim)

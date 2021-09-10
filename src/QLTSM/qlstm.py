@@ -41,6 +41,7 @@ class QLSTM(nn.Module):
         return_sequences=False,
         return_state=False,
         backend="default.qubit",
+        device="cpu"
     ):
         super(QLSTM, self).__init__()
         self.n_inputs = input_size
@@ -49,6 +50,7 @@ class QLSTM(nn.Module):
         self.n_qubits = n_qubits
         self.n_qlayers = n_qlayers
         self.backend = backend  # "default.qubit", "qiskit.basicaer", "qiskit.ibm"
+        self.device = device # "cpu", "cuda"
 
         self.batch_first = batch_first
         self.return_sequences = return_sequences
@@ -90,10 +92,10 @@ class QLSTM(nn.Module):
 
         self.clayer_in = torch.nn.Linear(self.concat_size, n_qubits)
         self.VQC = {
-            "forget": qml.qnn.TorchLayer(self.qlayer_forget, weight_shapes),
-            "input": qml.qnn.TorchLayer(self.qlayer_input, weight_shapes),
-            "update": qml.qnn.TorchLayer(self.qlayer_update, weight_shapes),
-            "output": qml.qnn.TorchLayer(self.qlayer_output, weight_shapes),
+            "forget": qml.qnn.TorchLayer(self.qlayer_forget, weight_shapes).to(device),
+            "input": qml.qnn.TorchLayer(self.qlayer_input, weight_shapes).to(device),
+            "update": qml.qnn.TorchLayer(self.qlayer_update, weight_shapes).to(device),
+            "output": qml.qnn.TorchLayer(self.qlayer_output, weight_shapes).to(device),
         }
         self.clayer_out = torch.nn.Linear(self.n_qubits, self.hidden_size)
         # self.clayer_out = [torch.nn.Linear(n_qubits, self.hidden_size) for _ in range(4)]
@@ -115,8 +117,8 @@ class QLSTM(nn.Module):
 
         hidden_seq = []
         if init_states is None:
-            h_t = torch.zeros(batch_size, self.hidden_size) # device? # hidden state (output)
-            c_t = torch.zeros(batch_size, self.hidden_size) # device? # cell state
+            h_t = torch.zeros(batch_size, self.hidden_size, device=self.device) # hidden state (output)
+            c_t = torch.zeros(batch_size, self.hidden_size, device=self.device) # cell state
         else:
             # for now we ignore the fact that in PyTorch you can stack multiple RNNs
             # so we take only the first elements of the init_states tuple init_states[0][0], init_states[1][0]
@@ -129,18 +131,18 @@ class QLSTM(nn.Module):
             x_t = x[:, t, :]
 
             # Concatenate input and hidden state
-            v_t = torch.cat((h_t, x_t), dim=1)
+            v_t = torch.cat((h_t, x_t), dim=1).float()
 
             # match qubit dimension
             y_t = self.clayer_in(v_t)
 
             f_t = torch.sigmoid(
-                self.clayer_out(self.VQC["forget"](y_t))
+                self.clayer_out(self.VQC["forget"](y_t).to(self.device))
             )  # forget block
-            i_t = torch.sigmoid(self.clayer_out(self.VQC["input"](y_t)))  # input block
-            g_t = torch.tanh(self.clayer_out(self.VQC["update"](y_t)))  # update block
+            i_t = torch.sigmoid(self.clayer_out(self.VQC["input"](y_t).to(self.device)))  # input block
+            g_t = torch.tanh(self.clayer_out(self.VQC["update"](y_t).to(self.device)))  # update block
             o_t = torch.sigmoid(
-                self.clayer_out(self.VQC["output"](y_t))
+                self.clayer_out(self.VQC["output"](y_t).to(self.device))
             )  # output block
 
             c_t = (f_t * c_t) + (i_t * g_t)
@@ -152,6 +154,8 @@ class QLSTM(nn.Module):
         hidden_seq = hidden_seq.transpose(0, 1).contiguous()
 
         # Wow, such pseudo-keras!
+        h_t, c_t = h_t.float(), c_t.float()
+
         if self.return_state:
             if self.return_sequences:
                 return hidden_seq, (h_t, c_t)

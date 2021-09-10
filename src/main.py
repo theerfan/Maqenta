@@ -19,10 +19,10 @@ model_str = f"saved_models/{model_name}.pt"
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 print("Initialized Midi")
-midi = Midi(seq_length)
+midi = Midi(seq_length, device)
 
 print("Initialized LSTM")
-lstm = LSTMusic(hidden_dim=midi.n_vocab, n_qubits=n_qubits).to(device)
+lstm = LSTMusic(hidden_dim=midi.n_vocab, n_qubits=n_qubits, device=device).to(device)
 
 if Path(model_str).is_file():
     print("Loading model")
