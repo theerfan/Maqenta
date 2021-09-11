@@ -1,5 +1,4 @@
 import torch
-from torch.cuda import device_count
 import torch.nn as nn
 from torch import optim
 import torch.nn.functional as F
@@ -100,7 +99,7 @@ class LSTMusic(nn.Module):
         history = {"loss": []}
 
         for epoch in range(n_epochs):
-            counter = 1
+            counter = 0
             losses = []
             for note_series, next_note in zip(inputs, outputs):
                 # Step 1. Remember that Pytorch accumulates gradients.
@@ -117,7 +116,8 @@ class LSTMusic(nn.Module):
                 optimizer.step()
                 losses.append(float(loss))
 
-                print(f"On datapoint #{counter} out of {cutoff}")
+                if counter % 100 == 0:
+                    print(f"On datapoint #{counter} out of {cutoff}")
                 counter += 1
 
             avg_loss = np.mean(losses)
@@ -136,12 +136,12 @@ class LSTMusic(nn.Module):
 
             # generate 500 notes
             for _ in range(n_notes):
-                prediction_input = np.reshape(pattern, (1, len(pattern), 1))
+                prediction_input = pattern.clone().detach().reshape(1, len(pattern), 1)
                 # prediction_input = prediction_input / float(n_vocab)
 
                 (h_t, prediction) = self.model.predict(prediction_input)
 
-                index = np.argmax(prediction)
+                index = prediction.argmax()
                 result = int_to_note[int(index)]
                 prediction_output.append(result)
 
