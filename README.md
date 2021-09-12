@@ -19,8 +19,8 @@
 
 3. Learn more about other QML Methods that could be possible for generating music.
    * [x] [Quanvolutional Neural Networks](https://pennylane.ai/qml/demos/tutorial_quanvolution.html).
+   * [x] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Quantum models as Fourier series](https://pennylane.ai/qml/demos/tutorial_expressivity_fourier_series.html).
-   * [ ] [Quantum transfer learning](https://pennylane.ai/qml/demos/tutorial_quantum_transfer_learning.html).
    * [ ] [Learning to learn with quantum neural networks](https://pennylane.ai/qml/demos/learning2learn.html).
    * [ ] [Quantum support vector machine for big data classification](https://arxiv.org/abs/1307.0471).
  
