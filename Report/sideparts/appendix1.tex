@@ -1,0 +1,29 @@
+\chapter*{‌پیوست}
+\markboth{پیوست}{}
+\addcontentsline{toc}{chapter}{پیوست}
+موضوعات مرتبط با متن گزارش پایان نامه كه در يكی از گروه‌های زير قرار می‌گيرد، در بخش پيوست‌ها آورده شوند:
+\begin{enumerate}
+\item  اثبات های رياضی يا عمليات رياضی طولانی‌.‌
+\item داده و اطلاعات نمونه (های) مورد مطالعه (\lr{Case Study}) چنانچه طولانی باشد‌.‌
+\item نتايج كارهای ديگران چنانچه نياز به تفصيل باشد‌.‌
+\item مجموعه تعاريف متغيرها و پارامترها، چنانچه طولانی بوده و در متن به انجام نرسيده باشد‌.‌
+\end{enumerate}
+% براي شماره‌گذاري روابط، جداول و اشكال موجود در پيوست‌ از ساختار متفاوتي نسبت به متن اصلي استفاده مي‌شود كه در زير به‌عنوان نمونه نمايش داده شده‌است. 
+% \begin{equation}
+%F=ma
+%\end{equation}
+\section*{کد میپل }
+\begin{latin}
+\begin{verbatim}
+
+with(DifferentialGeometry):
+with(Tensor):
+DGsetup([x, y, z], M)
+																	frame name: M
+a := evalDG(D_x)
+																	D_x
+b := evalDG(-2 y z D_x+2 x D_y/z^3-D_z/z^2)
+
+
+\end{verbatim}
+\end{latin}

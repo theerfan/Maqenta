@@ -1,0 +1,291 @@
+% در این فایل، دستورها و تنظیمات مورد نیاز، آورده شده است.
+%-------------------------------------------------------------------------------------------------------------------
+% در ورژن جدید زی‌پرشین برای تایپ متن‌های ریاضی، این سه بسته، حتماً باید فراخوانی شود.
+\usepackage{amsthm,amssymb,amsmath,amsfonts}
+% بسته‌ای برای تنطیم حاشیه‌های بالا، پایین، چپ و راست صفحه
+\usepackage[top=30mm, bottom=30mm, left=25mm, right=30mm]{geometry}
+% بسته‌‌ای برای ظاهر شدن شکل‌ها و تصاویر متن
+\usepackage{graphicx}
+\usepackage{color}
+%بسته‌ای برای تنظیم فاصله عمودی خط‌های متن
+\usepackage{setspace}
+\usepackage{titletoc}
+\usepackage{tocloft}
+%با فعال کردن بسته زیر فوت‌نوت‌ها در هر صفحه ریست می‌شوند. حالت پیش‌فرض آن ریست شدن در هر فصل می‌باشد.
+%\usepackage[perpage]{footmisc}
+\usepackage{enumitem}
+\usepackage{caption}
+%\usepackage{titlesec}
+% بسته‌ و دستوراتی برای ایجاد لینک‌های رنگی با امکان جهش
+\usepackage[pagebackref=false,colorlinks,linkcolor=blue,citecolor=red]{hyperref}
+\usepackage[nameinlink]{cleveref}%capitalize,,noabbrev
+% \usepackage{polyglossia}
+
+% \setdefaultlanguage[numerals=maghrib]{persian}
+% \setotherlanguage{english}
+
+ \AtBeginDocument{%
+    \crefname{equation}{برابری}{equations}%
+    \crefname{chapter}{فصل}{chapters}%
+    \crefname{section}{بخش}{sections}%
+    \crefname{appendix}{پیوست}{appendices}%
+    \crefname{enumi}{مورد}{items}%
+    \crefname{footnote}{زیرنویس}{footnotes}%
+    \crefname{figure}{شکل}{figures}%
+    \crefname{table}{جدول}{tables}%
+    \crefname{theorem}{قضیه}{theorems}%
+    \crefname{lemma}{لم}{lemmas}%
+    \crefname{corollary}{نتیجه}{corollaries}%
+    \crefname{proposition}{گزاره}{propositions}%
+    \crefname{definition}{تعریف}{definitions}%
+    \crefname{result}{نتیجه}{results}%
+    \crefname{example}{مثال}{examples}%
+    \crefname{remark}{نکته}{remarks}%
+    \crefname{note}{یادداشت}{notes}%
+}
+% چنانچه قصد پرینت گرفتن نوشته خود را دارید، خط بالا را غیرفعال و  از دستور زیر استفاده کنید چون در صورت استفاده از دستور زیر‌‌، 
+% لینک‌ها به رنگ سیاه ظاهر خواهند شد که برای پرینت گرفتن، مناسب‌تر است
+%\usepackage[pagebackref=false]{hyperref}
+% بسته‌ لازم برای تنظیم سربرگ‌ها
+\usepackage{fancyhdr}
+% بسته‌ای برای ظاهر شدن «مراجع»  در فهرست مطالب
+\usepackage[nottoc]{tocbibind}
+% دستورات مربوط به ایجاد نمایه
+\usepackage{makeidx,multicol}
+\setlength{\columnsep}{1.5cm}
+
+\usepackage[bottom]{footmisc}
+\usepackage{float}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{verbatim}
+\makeindex
+\usepackage{sectsty}
+% فراخوانی بسته زی‌پرشین و تعریف قلم فارسی و انگلیسی
+\usepackage{xepersian}%[extrafootnotefeatures]
+\SepMark{-}
+%حتماً از تک لایو 2014 استفاده کنید.
+% \setmainfont[
+%  UprightFont={XB Niloofar.ttf}
+%  BoldFont={XB NiloofarBd.ttf}, 
+% %  ItalicFont={XB NiloofarIt.ttf},
+% %  BoldItalicFont={XB NiloofarBdIt.ttf}
+%  ]{}
+% HERE
+\usepackage[T1]{fontenc}
+% \setmainfont[Path=fonts/,
+%         UprightFont=XB Niloofar.ttf,
+%         ItalicFont=XB NiloofarIt.ttf]
+%   {XB Niloofar.ttf}
+\settextfont[Scale=1]{XB Niloofar.ttf}
+% \setlatintextfont{Times New Roman.ttf}
+\renewcommand{\labelitemi}{$\bullet$}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% چنانچه می‌خواهید اعداد در فرمول‌ها، انگلیسی باشد، خط زیر را غیرفعال کنید.
+%در غیر اینصورت حتماً فونت PGaramond را نصب کنید.
+% \setdigitfont[Scale=1.1]{Yas.ttf}%%Yas
+\setcounter{secnumdepth}{4}
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% تعریف قلم‌های فارسی اضافی برای استفاده در بعضی از قسمت‌های متن
+% \defpersianfont\nastaliq[Scale=2]{IranNastaliq.ttf}
+% \defpersianfont\chapternumber[Scale=3]{B Nazanin.ttf}
+%\chapterfont{\centering}%
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% دستوری برای تغییر نام کلمه «اثبات» به «برهان»
+\renewcommand\proofname{\textbf{برهان}}
+
+% دستوری برای تغییر نام کلمه «کتاب‌نامه» به «منابع و مراجع«
+\renewcommand{\bibname}{منابع و مراجع}
+
+
+% Headings for every page of ToC, LoF and Lot
+\setlength{\cftbeforetoctitleskip}{-1.2em}
+\setlength{\cftbeforelottitleskip}{-1.2em}
+\setlength{\cftbeforeloftitleskip}{-1.2em}
+\setlength{\cftaftertoctitleskip}{-1em}
+\setlength{\cftafterlottitleskip}{-1em}
+\setlength{\cftafterloftitleskip}{-1em}
+%%\makeatletter
+%%%%\renewcommand{\l@chapter}{\@dottedtocline{1}{1em\bfseries}{1em}}
+%%%%\renewcommand{\l@section}{\@dottedtocline{2}{2em}{2em}}
+%%%%\renewcommand{\l@subsection}{\@dottedtocline{3}{3em}{3em}}
+%%%%\renewcommand{\l@subsubsection}{\@dottedtocline{4}{4em}{4em}}
+%%%%\makeatother
+
+
+\newcommand\tocheading{\par عنوان\hfill صفحه \par}
+\newcommand\lofheading{\hspace*{.5cm}\figurename\hfill صفحه \par}
+\newcommand\lotheading{\hspace*{.5cm}\tablename\hfill صفحه \par}
+
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cfttoctitlefont}{\hspace*{\fill}\LARGE\bfseries}%\Large
+\renewcommand{\cftaftertoctitle}{\hspace*{\fill}}
+\renewcommand{\cftlottitlefont}{\hspace*{\fill}\LARGE\bfseries}%\Large
+\renewcommand{\cftafterlottitle}{\hspace*{\fill}}
+\renewcommand{\cftloftitlefont}{\hspace*{\fill}\LARGE\bfseries}
+\renewcommand{\cftafterloftitle}{\hspace*{\fill}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+% تعریف و نحوه ظاهر شدن عنوان قضیه‌ها، تعریف‌ها، مثال‌ها و ...
+%برای شماره گذاری سه تایی قضیه ها
+\theoremstyle{definition}
+\newtheorem{definition}{تعریف}[section]
+\newtheorem{remark}[definition]{نکته}
+\newtheorem{note}[definition]{یادداشت}
+\newtheorem{example}[definition]{نمونه}
+\newtheorem{question}[definition]{سوال}
+\newtheorem{remember}[definition]{یاداوری}
+\theoremstyle{theorem}
+\newtheorem{theorem}[definition]{قضیه}
+\newtheorem{lemma}[definition]{لم}
+\newtheorem{proposition}[definition]{گزاره}
+\newtheorem{corollary}[definition]{نتیجه}
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%
+%%% برای شماره گذاری چهارتایی قضیه ها و ...
+%%\newtheorem{definition1}[subsubsection]{تعریف}
+%%\newtheorem{theorem1}[subsubsection]{قضیه}
+%%\newtheorem{lemma1}[subsubsection]{لم}
+%%\newtheorem{proposition1}[subsubsection]{گزاره}
+%%\newtheorem{corollary1}[subsubsection]{نتیجه}
+%%\newtheorem{remark1}[subsubsection]{نکته}
+%%\newtheorem{example1}[subsubsection]{مثال}
+%%\newtheorem{question1}[subsubsection]{سوال}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% دستورهایی برای سفارشی کردن صفحات اول فصل‌ها
+\makeatletter
+\newcommand\mycustomraggedright{%
+ \if@RTL\raggedleft%
+ \else\raggedright%
+ \fi}
+\def\@makechapterhead#1{%
+\thispagestyle{style1}
+\vspace*{20\p@}%
+{\parindent \z@ \mycustomraggedright
+\ifnum \c@secnumdepth >\m@ne
+\if@mainmatter
+
+\bfseries{\Huge \@chapapp}\small\space \chapternumber {\huge\thechapter}
+\par\nobreak
+\vskip 0\p@
+\fi
+\fi
+\interlinepenalty\@M 
+\Huge \bfseries #1\par\nobreak
+\vskip 120\p@
+
+}
+
+\thispagestyle{empty}
+\newpage}
+\bidi@patchcmd{\@makechapterhead}{\thechapter}{\tartibi{chapter}}{}{}
+\bidi@patchcmd{\chaptermark}{\thechapter}{\tartibi{chapter}}{}{}
+\makeatother
+
+\pagestyle{fancy}
+\renewcommand{\chaptermark}[1]{\markboth{\chaptername~\tartibi{chapter}: #1}{}}
+
+\fancypagestyle{style1}{
+\fancyhf{} 
+\fancyfoot[c]{\thepage}
+\fancyhead[R]{\leftmark}%
+\renewcommand{\headrulewidth}{1.2pt}
+}
+
+
+\fancypagestyle{style2}{
+\fancyhf{}
+\fancyhead[R]{چکیده}
+\fancyfoot[C]{\thepage{}}
+\renewcommand{\headrulewidth}{1.2pt}
+}
+
+\fancypagestyle{style3}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست نمادها}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style4}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست جداول}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style5}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست اشکال}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style6}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست مطالب}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style7}{%
+  \fancyhf{}%
+  \fancyhead[R]{نمایه}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style8}{%
+  \fancyhf{}%
+  \fancyhead[R]{منابع و مراجع}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+\fancypagestyle{style9}{%
+  \fancyhf{}%
+  \fancyhead[R]{واژه‌نامه‌ی فارسی به انگلیسی}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+\fancypagestyle{style10}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست معادلات}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
+%
+
+
+%دستور حذف نام لیست تصاویر و لیست جداول از فهرست مطالب
+\newcommand*{\BeginNoToc}{%
+  \addtocontents{toc}{%
+    \edef\protect\SavedTocDepth{\protect\the\protect\value{tocdepth}}%
+  }%
+  \addtocontents{toc}{%
+    \protect\setcounter{tocdepth}{-10}%
+  }%
+}
+\newcommand*{\EndNoToc}{%
+  \addtocontents{toc}{%
+    \protect\setcounter{tocdepth}{\protect\SavedTocDepth}%
+  }%
+}
+\newcounter{savepage}
+\renewcommand{\listfigurename}{فهرست اشکال}
+\renewcommand{\listtablename}{فهرست جداول}
+
+\newcommand{\listequationsname}{فهرست معادلات}
+\newlistof{myequations}{equ}{\listequationsname}
+\newcommand{\myequations}[1]{%
+\addcontentsline{equ}{myequations}{\protect\numberline{\theequation}#1}\par}
+\setlength{\cftmyequationsnumwidth}{2.5em}% Width of equation number in List of Equations
+
+
+%\renewcommand\cftsecleader{\cftdotfill{\cftdotsep}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \numberwithin{section}{equation}
+\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
