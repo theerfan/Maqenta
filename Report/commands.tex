@@ -15,6 +15,10 @@
 %\usepackage[perpage]{footmisc}
 \usepackage{enumitem}
 \usepackage{caption}
+
+\usepackage{algorithm}
+\usepackage{algorithmic}
+% \usepackage{algpseudocode}
 %\usepackage{titlesec}
 % بسته‌ و دستوراتی برای ایجاد لینک‌های رنگی با امکان جهش
 \usepackage[pagebackref=false,colorlinks,linkcolor=blue,citecolor=red]{hyperref}
@@ -25,7 +29,7 @@
 % \setotherlanguage{english}
 
  \AtBeginDocument{%
-    \crefname{equation}{برابری}{equations}%
+    \crefname{equation}{معادله}{equations}%
     \crefname{chapter}{فصل}{chapters}%
     \crefname{section}{بخش}{sections}%
     \crefname{appendix}{پیوست}{appendices}%
@@ -113,8 +117,15 @@
 
 
 \newcommand\tocheading{\par عنوان\hfill صفحه \par}
+\newcommand\loaheading{\par الگوریتم\hfill صفحه \par}
+% \newcommand\khiarheading{\par معادله\hfill صفحه \par}
+
+\newcommand\loeheading{\par معادله\hfill صفحه \par}
+
 \newcommand\lofheading{\hspace*{.5cm}\figurename\hfill صفحه \par}
-\newcommand\lotheading{\hspace*{.5cm}\tablename\hfill صفحه \par}
+% \newcommand\lotheading{\hspace*{.5cm}\tablename\hfill صفحه \par}
+
+% \newcommand\eqoheading{\hspace*{.5cm}\equationame\hfill صفحه \par}
 
 \renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
 \renewcommand{\cfttoctitlefont}{\hspace*{\fill}\LARGE\bfseries}%\Large
@@ -134,7 +145,7 @@
 \newtheorem{example}[definition]{نمونه}
 \newtheorem{question}[definition]{سوال}
 \newtheorem{remember}[definition]{یاداوری}
-\theoremstyle{theorem}
+\theoremstyle{theorem}{}
 \newtheorem{theorem}[definition]{قضیه}
 \newtheorem{lemma}[definition]{لم}
 \newtheorem{proposition}[definition]{گزاره}
@@ -224,7 +235,7 @@
 
 \fancypagestyle{style6}{%
   \fancyhf{}%
-  \fancyhead[R]{فهرست مطالب}
+  \fancyhead[RO, LE]{فهرست مطالب}
   \fancyfoot[C]{\thepage}%
   \renewcommand{\headrulewidth}{1.2pt}%
 }
@@ -256,6 +267,13 @@
   \renewcommand{\headrulewidth}{1.2pt}%
 }
 
+\fancypagestyle{style11}{%
+  \fancyhf{}%
+  \fancyhead[R]{فهرست الگوریتم‌ها}
+  \fancyfoot[C]{\thepage}%
+  \renewcommand{\headrulewidth}{1.2pt}%
+}
+
 %
 
 
@@ -273,21 +291,37 @@
     \protect\setcounter{tocdepth}{\protect\SavedTocDepth}%
   }%
 }
+
 \newcounter{savepage}
 \renewcommand{\listfigurename}{فهرست اشکال}
 \renewcommand{\listtablename}{فهرست جداول}
+% \listofalgorithms
 
-\newcommand{\listequationsname}{فهرست معادلات}
+\newcommand{\listequationsname}{
+\hfill
+فهرست معادلات
+\hfill
+}
 \newlistof{myequations}{equ}{\listequationsname}
 \newcommand{\myequations}[1]{%
 \addcontentsline{equ}{myequations}{\protect\numberline{\theequation}#1}\par}
-\setlength{\cftmyequationsnumwidth}{2.5em}% Width of equation number in List of Equations
+\setlength{\cftmyequationsnumwidth}{2.5em} % Width of equation number in List of Equations
 
+\newcommand{\listalgorithmsname}{
+\hfill
+فهرست الگوریتم‌ها
+\hfill
+}
+\newlistof{myalgorithms}{algo}{\listalgorithmsname}
+\newcommand{\myalgorithms}[1]{%
+\addcontentsline{algo}{myalgorithms}{\protect\numberline{\thealgorithm}#1}\par}
+\setlength{\cftmyequationsnumwidth}{2.5em} % Width of equation number in List of Equations
+\renewcommand{\theequation}{\arabic{chapter}.\arabic{algorithm}}
 
 %\renewcommand\cftsecleader{\cftdotfill{\cftdotsep}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % \numberwithin{section}{equation}
-\renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
-\newcommand{\hst}[]{\hspace{2mm}}
-\newcommand{\hso}[]{\hspace{1mm}}
+\renewcommand{\theequation}{\arabic{chapter}.\arabic{equation}}
+\newcommand{\hst}[0]{\hspace{2mm}}
+\newcommand{\hso}[0]{\hspace{1mm}}
