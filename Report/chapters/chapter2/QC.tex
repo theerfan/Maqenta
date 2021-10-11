@@ -128,6 +128,7 @@
 \lr{$2^n \times 2^n$}
 هستند که در این‌جا، عدد \lr{$n$}
 نشان‌گر تعداد کیوبیت‌های سیستم است.
+اعمال شدن هر گیت کوانتومی بر روی یک سیستم، به معنای ضرب‌شدن ماتریس آن گیت بر روی بردار وضعیت کیوبیت‌های سیستم است.
 به دلیل استفاده از گیت‌های کوانتومی، الگوریتم‌های کوانتومی به نام مدارهای کوانتومی نیز مطرح هستند و عمق یک مدار کوانتومی، به معنای بیشینه‌ی تعداد گیت‌هایی است که بر روی هر کدام از کیوبیت‌ها اعمال می‌شود.
 \subsubsection{
     گیت‌های کوانتومی تک‌کیوبیتی
@@ -186,6 +187,23 @@ $\phi$
 \end{gathered}
 \end{equation}
 \myequations{گیت‌های دوران پائولی}
+
+همان‌طور که گفته شد، اعمال گیت بر روی یک سیستم به معنای ضرب ماتریس آن گیت بر روی بردار وضعیت کیوبیت‌های سیستم است؛ پس به عنوان مثال مشاهده می‌شود:
+\begin{equation}
+\begin{gathered}
+    X|0\rangle = \begin{bmatrix} 0 & 1 \\ 1 & 0 \end{bmatrix} \begin{bmatrix} 1 \\ 0 \end{bmatrix} = \begin{bmatrix} 0 \\ 1 \end{bmatrix} = |1\rangle \\[4pt]
+    H|0\rangle = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \begin{bmatrix} 1 \\ 0 \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = |+\rangle = \frac{1}{\sqrt{2}}(|0\rangle + |1\rangle) \\[4pt]
+    H|1\rangle = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 & 1 \\ 1 & -1 \end{bmatrix} \begin{bmatrix} 0 \\ 1 \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1 \end{bmatrix} = |-\rangle = \frac{1}{\sqrt{2}}(|0\rangle - |1\rangle) \\[4pt]
+    Z|+\rangle = \begin{bmatrix} 1 & 0 \\ 0 & -1 \end{bmatrix} \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ 1 \end{bmatrix} = \frac{1}{\sqrt{2}} \begin{bmatrix} 1 \\ -1 \end{bmatrix} = |-\rangle 
+\end{gathered}
+\end{equation}
+\myequations{تاثیر گیت‌های کوانتومی تک‌کیوبیتی بر روی سیستم تک‌کیوبیتی}
+% \hsm
+بردار وضعیت‌هایی که در معادله‌ی بالا با اسامی
+$|+\rangle$
+و
+$|-\rangle$
+مشخص شده‌اند، بردار وضعیت‌های مهمی هستند و در الگوریتم‌های بسیار زیادی ظاهر می‌شوند.
 
 \subsubsection{
     گیت‌های کوانتومی چند‌کیوبیتی

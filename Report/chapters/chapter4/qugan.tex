@@ -89,8 +89,8 @@
 \caption{پس‌پردازش ماژول \lr{QuGAN}} \label{alg:quganpost}
 \lr{
     \begin{algorithmic}
-        \STATE $model\_output_i = model(input_i)$
-        \STATE $model\_output_i = (model\_output_i + 1) * norm_i$
+        \STATE $raw\_model\_output_i = model(input_i)$
+        \STATE $model\_output_i = (raw\_model\_output_i + 1) * norm_i$
         \STATE $counter = 1$
         \WHILE {$model\_output_i \not\in mapping.keys()$}
         \STATE $model\_output_i = model\_output_i * counter / (counter+1)$
@@ -119,18 +119,19 @@ $input_i$
 $norm_i$
 طبق معادله‌ی
 \ref{eqn:midi_data}
-تعریف شده‌اند. 
+تعریف شده‌اند،
+$raw\_model\_output_i$
+خروجی اولیه‌ای است که از مدار کوانتومی گرفته می‌شود و
+$model\_output_i$
+خروجی نهایی بعد از پس‌پردازش است.
 منظور از 
 \lr{mapping}
-همان نگاشت یک به یک از نت‌ها به اعداد طبیعی است و
-$model\_output_i$
-خروجی نهایی بعد از پس‌پردازش،
-است.
+نیز همان نگاشت یک به یک از نت‌ها به اعداد طبیعی است.
 در نهایت، تابع
 \lr{generate\_notes}
 با گرفتن پارامتر
-\lr{n\_notes}
-با چندین‌بار اجرای الگوریتم، به تعداد
+\lr{n\_notes}،
+الگوریتم را چندین‌بار اجرا کرده، به تعداد
 \lr{n\_notes}
 نت موسیقی جدید تولید کرده و آن‌ها را در یک فایل با پسوند
 \lr{midi}

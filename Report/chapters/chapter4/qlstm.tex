@@ -125,8 +125,8 @@ $CNOT$
 \caption{پس‌پردازش ماژول \lr{QLSTM}}  \label{alg:qlstmpost}
 \lr{
     \begin{algorithmic}
-        \STATE $model\_array\_outputs_i = QLSTMCell(input_i)$
-        \STATE $model\_output_i = mean(model\_array\_outputs_i)$
+        \STATE $raw\_model\_output_i = QLSTMCell(input_i)$
+        \STATE $model\_output_i = mean(raw\_model\_output_i)$
         \STATE $model\_output_i = model\_output_i * norm_i$
     \end{algorithmic}
 }
@@ -152,9 +152,11 @@ $input_i$
 $norm_i$
 طبق معادله‌ی
 \ref{eqn:midi_data}
-تعریف شده‌اند و خروجی نهایی بعد از پس‌پردازش،
+تعریف شده‌اند،
+$raw\_model\_output_i$
+خروجی اولیه‌ای است که از مدار کوانتومی گرفته می‌شود و
 $model\_output_i$
-است.
+خروجی نهایی بعد از پس‌پردازش است.
 
 
 
