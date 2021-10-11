@@ -27,7 +27,7 @@
 \newcommand{\secondadvisor}[1]{\def\fsecondadvisor{#1}}
 \newcommand{\internalexaminer}[1]{\def\finternalexaminer{#1}}
 \newcommand{\externalexaminer}[1]{\def\fexternalexaminer{#1}}
-\newcommand{\fnote}[1]{\footnote{\lr{#1}}}
+\newcommand{\fnote}[1]{\LTRfootnote{\lr{#1}}}
 \def\name#1{\gdef\fname{#1}}
 \def\surname#1{\gdef\lname{#1}}
 \def\fatitle#1{\gdef\ftitle{#1}}
@@ -64,7 +64,6 @@
 \newcommand{\AUTtitle}{\begin{titlepage}
 %\topmargin=-30pt
 \vspace{-1cm}\centerline{{\includegraphics[height=3.8cm]{figures/fa-logo.png}}}
-\vspace{-1cm}
 {\bf{\fontsize{16pt}{16pt}\selectfont دانشگاه صنعتی امیرکبیر}\par
 \vspace{-1cm}\fontsize{14pt}{15pt}\selectfont(پلی‌تکنیک تهران)\par
 \vspace{-1cm}\fontsize{16pt}{17pt}\selectfont\@faculty}\par
