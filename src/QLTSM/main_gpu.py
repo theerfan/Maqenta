@@ -1,0 +1,542 @@
+# To add a new cell, type '# %%'
+# To add a new markdown cell, type '# %% [markdown]'
+# %%
+from IPython import get_ipython
+
+# %%
+# get_ipython().system('pip install git+https://github.com/PennyLaneAI/pennylane')
+
+
+# %%
+import torch
+import torch.nn as nn
+from torch import optim
+import torch.nn.functional as F
+from torch import tensor
+
+from pathlib import Path
+
+import pennylane as qml
+from pennylane import numpy as np
+from pennylane.templates import embeddings as emb
+from pennylane.templates import layers as lay
+
+from typing import Union
+
+import matplotlib.pyplot as plt
+
+from music21 import converter, instrument, note, chord, stream
+import glob, pickle, time
+
+
+# %%
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+device
+
+
+# %%
+# get_ipython().system('wget https://github.com/theerfan/Maqenta/raw/main/data/notes.pk')
+
+
+# %%
+# Midi.py
+
+notes_dir = "notes.pk"
+frequencies_dir = "freqs.pk"
+
+
+class Midi:
+    def __init__(self, seq_length, device):
+        self.seq_length = seq_length
+        self.device = device
+
+        if Path(notes_dir).is_file():
+            self.notes = pickle.load(open(notes_dir, "rb"))
+            self.frequencies = pickle.load(open(frequencies_dir, "rb"))
+        else:
+            self.notes, self.frequencies = self.get_notes()
+            pickle.dump(self.notes, open(notes_dir, "wb"))
+            pickle.dump(self.frequencies, open(frequencies_dir, "wb"))
+
+        self.network_input, self.network_output = self.prepare_sequences(self.notes, self.frequencies)
+        print(f"Input shape: {self.network_input.shape}")
+        print(f"Output shape: {self.network_output.shape}")
+    
+    def lazy_superimpose(self, input_chord):
+        frequencies = np.array([note.pitch.frequency for note in input_chord.notes])
+        return np.average(frequencies, axis=0)
+        
+
+    def get_notes(self):
+        """Get all the notes and chords from the midi files in the ./midi_songs directory"""
+        # This is assuming that every interval between notes is the same (0.5)
+        notes = []
+        frequencies = []
+
+        for file in glob.glob("midi_songs/*.mid"):
+            midi = converter.parse(file)
+
+            print("Parsing %s" % file)
+
+            notes_to_parse = None
+
+            try:  # file has instrument parts
+                s2 = instrument.partitionByInstrument(midi)
+                notes_to_parse = s2.parts[0].recurse()
+            except:  # file has notes in a flat structure
+                notes_to_parse = midi.flat.notes
+
+            for element in notes_to_parse:
+                if isinstance(element, note.Note):
+                    notes.append(str(element.pitch))
+                    frequencies.append(element.pitch.frequency)
+                elif isinstance(element, chord.Chord):
+                    notes.append(".".join(str(n) for n in element.normalOrder))
+                    frequencies.append(self.lazy_superimpose(element))
+
+        return notes, frequencies
+
+    def prepare_sequences(self, notes, frequencies):
+        """Prepare the sequences used by the Neural Network"""
+        # self.n_vocab = len(set(notes))
+
+        # get all pitch names
+        # pitchnames = sorted(set(item for item in notes))
+        # Order pitchnames by their frequencies, so that the mse loss makes more sense
+        pitchnames = list(dict.fromkeys([x for _, x in sorted(zip(frequencies, notes))]))
+
+        # create a dictionary to map pitches to integers
+        self.note_to_int = {note: number for number, note in enumerate(pitchnames)}
+        self.int_to_note = {number: note for number, note in enumerate(pitchnames)}
+
+        network_input = []
+        network_output = []
+
+        # create input sequences and the corresponding outputs
+        for i in range(len(self.notes) - self.seq_length):
+            sequence_in = self.notes[i : i + self.seq_length]
+            sequence_out = self.notes[i + self.seq_length]
+            network_input.append([self.note_to_int[char] for char in sequence_in])
+            network_output.append(self.note_to_int[sequence_out])
+
+        n_patterns = len(network_input)
+
+        # reshape the input into a format compatible with LSTM layers
+        # So this is actuallyt (number of different inputs, sequence length, number of features)
+        network_input = np.reshape(network_input, (n_patterns, self.seq_length))
+        network_input = torch.tensor(network_input, device=self.device, dtype=torch.double)
+        network_output = torch.tensor(network_output, device=self.device)
+
+        self.input_norms = torch.tensor(torch.linalg.norm(network_input, axis=1))
+
+        return (
+            network_input,
+            network_output,
+        )
+
+    def create_midi_from_model(self, prediction_output, filename):
+        """convert the output from the prediction to notes and create a midi file
+        from the notes"""
+        offset = 0
+        output_notes = []
+
+        # create note and chord objects based on the values generated by the model
+        for pattern in prediction_output:
+            # pattern is a chord
+            if ("." in pattern) or pattern.isdigit():
+                notes_in_chord = pattern.split(".")
+                notes = []
+                for current_note in notes_in_chord:
+                    new_note = note.Note(int(current_note))
+                    new_note.storedInstrument = instrument.Piano()
+                    notes.append(new_note)
+                new_chord = chord.Chord(notes)
+                new_chord.offset = offset
+                output_notes.append(new_chord)
+            # pattern is a note
+            else:
+                new_note = note.Note(pattern)
+                new_note.offset = offset
+                new_note.storedInstrument = instrument.Piano()
+                output_notes.append(new_note)
+
+            # increase offset each iteration so that notes do not stack
+            offset += 0.5
+
+        midi_stream = stream.Stream(output_notes)
+
+        midi_stream.write("midi", fp=filename)
+
+
+# %%
+# QLSTM.py
+
+Embedding = Union[emb.AngleEmbedding, emb.AmplitudeEmbedding, emb.BasisEmbedding]
+Layer = Union[
+    lay.BasicEntanglerLayers,
+    lay.ParticleConservingU1,
+    lay.ParticleConservingU2,
+    lay.RandomLayers,
+    lay.StronglyEntanglingLayers,
+]
+
+
+class QLSTMCell(nn.Module):
+    def quantum_op(
+        self,
+        wires,
+        embedding: Embedding = emb.AmplitudeEmbedding,
+        layer: Layer = lay.RandomLayers,
+    ):
+        def circuit_part(inputs, weights):
+            if embedding == emb.AmplitudeEmbedding:
+              embedding(inputs.cpu().detach(), wires=wires, normalize=True)
+            else:
+              embedding(inputs, wires=wires)
+            if layer == lay.RandomLayers:
+              seed = np.random.randint(1, 2**12)
+              layer(weights, wires=wires, seed=seed)
+            else:
+              layer(weights, wires=wires)
+            return [qml.expval(qml.PauliZ(wires=w)) for w in wires]
+
+        return circuit_part
+
+    def __init__(
+        self,
+        input_size,
+        hidden_size,
+        n_qubits=4,
+        n_qlayers=1,
+        dropout=0,
+        batch_first=True,
+        return_sequences=False,
+        return_state=True,
+        backend="default.qubit",
+        device="cpu"
+    ):
+        super(QLSTMCell, self).__init__()
+        self.n_inputs = input_size
+        self.hidden_size = hidden_size
+        self.concat_size = self.n_inputs + self.hidden_size
+        self.n_qubits = n_qubits
+        self.n_qlayers = n_qlayers
+        self.backend = backend  # "default.qubit", "qiskit.basicaer", "qiskit.ibm"
+        self.device = device # "cpu", "cuda"
+        self.dropout = dropout
+
+        self.batch_first = batch_first
+        self.return_sequences = return_sequences
+        self.return_state = return_state
+
+        self.wires_forget = [f"wire_forget_{i}" for i in range(self.n_qubits)]
+        self.wires_input = [f"wire_input_{i}" for i in range(self.n_qubits)]
+        self.wires_update = [f"wire_update_{i}" for i in range(self.n_qubits)]
+        self.wires_output = [f"wire_output_{i}" for i in range(self.n_qubits)]
+
+        self.dev_forget = qml.device(self.backend, wires=self.wires_forget)
+        self.dev_input = qml.device(self.backend, wires=self.wires_input)
+        self.dev_update = qml.device(self.backend, wires=self.wires_update)
+        self.dev_output = qml.device(self.backend, wires=self.wires_output)
+
+        self.qlayer_forget = qml.QNode(
+            self.quantum_op(self.wires_forget), self.dev_forget, interface="torch"
+        )
+
+        self.qlayer_input = qml.QNode(
+            self.quantum_op(self.wires_input), self.dev_input, interface="torch"
+        )
+
+        self.qlayer_update = qml.QNode(
+            self.quantum_op(self.wires_update), self.dev_update, interface="torch"
+        )
+
+        self.qlayer_output = qml.QNode(
+            self.quantum_op(self.wires_output), self.dev_output, interface="torch"
+        )
+
+        weight_shapes = {"weights": (n_qlayers, n_qubits)}
+        # print(f"weight_shapes = (n_qlayers, n_qubits) = ({n_qlayers}, {n_qubits})")
+
+        self.VQC_forget = qml.qnn.TorchLayer(self.qlayer_forget, weight_shapes).to(device)
+        self.VQC_input = qml.qnn.TorchLayer(self.qlayer_input, weight_shapes).to(device)
+        self.VQC_update = qml.qnn.TorchLayer(self.qlayer_update, weight_shapes).to(device)
+        self.VQC_output = qml.qnn.TorchLayer(self.qlayer_output, weight_shapes).to(device)
+
+
+    def forward(self, x, init_states=None):
+        """
+        x.shape is (batch_size, seq_length, feature_size)
+        recurrent_activation -> sigmoid
+        activation -> tanh
+        """
+        # Automatically assumes single batch
+
+        x = x.to(self.device)
+        seq_length = x.size()
+
+        hidden_seq = []
+        if init_states is None:
+            h_t = torch.zeros(self.hidden_size, device=self.device) # hidden state (output)
+            c_t = torch.zeros(self.hidden_size, device=self.device) # cell state
+        else:
+            # for now we ignore the fact that in PyTorch you can stack multiple RNNs
+            # so we take only the first elements of the init_states tuple init_states[0][0], init_states[1][0]
+            h_t, c_t = init_states
+            # h_t = h_t[0]
+            # c_t = c_t[0]
+
+        # Concatenate input and hidden state
+        y_t = torch.cat((h_t, x), dim=0).float().to(device)
+        
+        f_t = torch.sigmoid(self.VQC_forget(y_t).to(self.device))  # forget block
+        i_t = torch.sigmoid(self.VQC_input(y_t).to(self.device)) # input block
+        g_t = torch.tanh(self.VQC_update(y_t).to(self.device))  # update block
+        o_t = torch.sigmoid(self.VQC_output(y_t).to(self.device)) # output block
+
+        c_t = (f_t * c_t) + (i_t * g_t)
+        h_t = o_t * torch.tanh(c_t)
+
+        hidden_seq.append(h_t.unsqueeze(0))
+
+        hidden_seq = torch.cat(hidden_seq, dim=0)
+        hidden_seq = hidden_seq.transpose(0, 1).contiguous()
+
+        h_t, c_t = h_t.float(), c_t.float()
+
+        if self.dropout:
+          F.dropout(h_t, self.dropout, inplace=True)
+
+        if self.return_state:
+            if self.return_sequences:
+                return hidden_seq, (h_t, c_t)
+            else:
+                return (h_t, c_t)
+        else:
+            if self.return_sequences:
+                return hidden_seq
+            else:
+                return h_t
+    
+    def predict(self, x, init_states=None):
+        return self.forward(x, init_states)
+
+
+# %%
+class QLSTM(nn.Module):
+
+  def __init__(self, input_size: int, hidden_size: int, n_layers: int, n_qubits: list, n_qlayers: list, dropouts: list, backend="default.qubit", device="cpu"):
+    super(QLSTM, self).__init__()
+    self.models = nn.ModuleList()
+    self.n_layers = n_layers
+    for i in range(self.n_layers):
+      self.models.append(
+          QLSTMCell(input_size, hidden_size, n_qubits[i], n_qlayers[i], dropouts[i], backend=backend, device=device)
+      )
+    
+  def forward(self, note_sequences):
+    # A tuple of (h_t, c_t)
+    outputs = []
+    h_t_c_t = None
+    for i in range(self.n_layers):
+      h_t_c_t = self.models[i](note_sequences[i], h_t_c_t)
+      # Only output c_t
+      outputs.append(h_t_c_t[1])
+    
+    return torch.stack(outputs)
+
+  def predict(self, note_sequences):
+    return self.forward(note_sequences)
+
+
+# %%
+def post_processing(ct_list, starting_i):
+  i = starting_i
+  for j in range(starting_i, starting_i + ct_list.shape[0]):
+    ct_list[j-i] = (ct_list[j-i] * float(midi.input_norms[j])).long()
+    ct_list[j-i] = torch.mean(ct_list[j-i]).long()
+  
+  return ct_list[:, 0]
+
+
+# %%
+# LSTMusic.py
+
+class QLSTMusic(nn.Module):
+    def __init__(
+        self,
+        n_qlayers=1,
+        n_layers=1,
+        dropout=0.3,
+        n_vocab=None,
+        input_dim=1,
+        hidden_dim=512,
+        n_qubits=4,
+        backend="default.qubit",
+        device="cpu",
+    ):
+        super(QLSTMusic, self).__init__()
+        self.hidden_dim = hidden_dim
+        self.n_layers = n_layers
+
+        # The LSTM takes word embeddings as inputs, and outputs hidden states
+        # with dimensionality hidden_dim.
+        if n_qubits > 0:
+            print(f"Generator will use Quantum LSTM running on backend {backend}")
+            r_n = range(n_layers)
+            n_qubits = [n_qubits for _ in r_n]
+            n_qlayers = [n_qlayers for _ in r_n]
+            dropouts = [dropout for _ in r_n]
+            self.model = QLSTM(input_dim, hidden_dim, n_layers, n_qubits, n_qlayers, dropouts, device=device).to(device)
+        else:
+            print("Generator will use Classical LSTM")
+            self.model = nn.LSTM(input_dim, hidden_dim)
+
+        # The linear layer that maps from hidden state space to tag space
+
+    def forward(self, note_sequences):
+        ct_list = self.model(note_sequences)
+        return torch.abs(ct_list)
+
+    def train(
+        self,
+        mode=True,
+        inputs=None,
+        outputs=None,
+        n_epochs=None,
+        cutoff: int = None,
+        learning_rate=0.1,
+    ):
+        if mode == False:
+            return
+        loss_function = nn.MSELoss()
+        optimizer = optim.SGD(filter(lambda p: p.requires_grad, self.model.parameters()), lr=learning_rate)
+
+        if cutoff:
+            inputs = inputs[:cutoff]
+            outputs = outputs[:cutoff]
+
+        history = {"loss": []}
+
+        midi_data = list(zip(inputs, outputs))
+
+        for epoch in range(n_epochs):
+            counter = 0
+            losses = []
+
+            for i in range(0, len(midi_data) - self.n_layers, self.n_layers):
+              data = midi_data[i:i+self.n_layers]
+              midi_input_sequences = [datum[0] for datum in data]
+              midi_output_sequences = torch.stack([datum[1] for datum in data])
+
+              optimizer.zero_grad()
+
+              lstm_output_sequence = self(midi_input_sequences)
+              lstm_output_sequence = post_processing(lstm_output_sequence, i)
+
+              loss = loss_function(lstm_output_sequence, midi_output_sequences.float())
+              loss.backward()
+              optimizer.step()
+
+              losses.append(float(loss))
+
+              if counter % 5 == 0:
+                print(f"On datapoint #{counter} out of {cutoff}")
+              counter += 1
+
+            avg_loss = np.mean(losses)
+            history["loss"].append(avg_loss)
+            print("Epoch {} / {}: Loss = {:.3f}".format(epoch + 1, n_epochs, avg_loss))
+        return history
+
+
+# %%
+n_qlayers = 2
+n_qubits = 6
+seq_length = 2**n_qubits - n_qubits
+
+n_layers = 50
+
+n_epochs = 3
+cutoff = 10_000
+
+generator_counter = 0
+
+model_name = f"lstm{n_layers}-seq{seq_length}-cut{cutoff}-epcs{n_epochs}-qu{n_qubits}-nq{n_qlayers}"
+model_str = f"{model_name}.pt"
+
+
+# %%
+print("Initializing Midi")
+midi = Midi(seq_length, device)
+
+
+# %%
+print("Initializing LSTM")
+lstm = QLSTMusic(n_qubits=n_qubits, n_qlayers=n_qlayers, n_layers=n_layers, hidden_dim=n_qubits, device=device).to(device)
+
+
+# %%
+def print_parameters():
+  for name, param in lstm.named_parameters():
+      if param.requires_grad:
+          print(name, param.data)
+
+
+# %%
+# TODO: Separate input data to test/train
+
+if Path(model_str).is_file():
+    print("Loading model")
+    lstm.load_state_dict(torch.load(model_str))
+    lstm.eval()
+    # lstm = torch.load(model_str)
+else:
+    print("Training LSTM")
+    train_history = lstm.train(
+        True, midi.network_input, midi.network_output, n_epochs=n_epochs, cutoff=cutoff
+    )
+    torch.save(lstm.state_dict(), model_str)
+
+
+# %%
+import random
+
+def generate_notes(self, network_input, int_to_note, n_notes, n_layers):
+        """Generate notes from the neural network based on a sequence of notes"""
+        # pick a random sequence from the input as a starting point for the prediction
+        req_size = n_notes//n_layers
+        start = random.randint(0, len(network_input) - req_size)
+        prediction_output = []
+
+        with torch.no_grad():
+            # generate n_notes
+            for i in range(start, start + n_notes, n_layers):
+                prediction_input = network_input[i:i+n_layers]
+
+                model_output = self.forward(prediction_input)
+                model_output = post_processing(model_output, i)
+
+                for prediction in model_output:
+                  index = torch.mean(prediction)
+                  result = int_to_note.get(int(index), '0')
+                  prediction_output.append(result)
+
+            return prediction_output
+
+
+# %%
+n_notes = 200
+print("Generating notes")
+notes = generate_notes(
+    lstm, midi.network_input, midi.int_to_note, n_notes=n_notes, n_layers=n_layers
+)
+notes
+
+
+# %%
+generator_counter += 1
+print("Saving as MIDI file.")
+midi.create_midi_from_model(notes, f"{model_name}_generated_{generator_counter}.mid")
+
+
