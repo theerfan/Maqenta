@@ -45,6 +45,9 @@
     تعدادی نت از مجموعه داده گرفته و آن‌ها را در کیوبیت‌های سیستم کدگذاری می‌کند، سپس زیرمدار
     \lr{discriminator}
     سعی می‌کند با بهینه‌سازی پارامترهای خود تشخیص دهد آیا داده‌ها واقعی هستند یا خیر.
+    نمایش دیداری این مدار در شکل 
+    \ref{fig:real_disc}
+    آمده است.
     
     \item
     مدار دوم که
@@ -56,6 +59,9 @@
     با بهینه‌سازی پارامترهای خود، اقدام به ساخت داده‌ی جدیدی از روی نویز کدگذاری شده می‌کند و در نهایت، زیرمدار
     \lr{discriminator}
     سعی می‌کند با بهینه‌سازی پارامترهای خود، تشخیص دهد آیا داده یکی از داده‌های واقعی است یا خیر.
+    نمایش دیداری این مدار در شکل 
+    \ref{fig:gen_disc}
+    آمده است.
     
     \item
     مدار سوم که
@@ -65,45 +71,148 @@
     و \\
     \lr{music\_generator}
     ابتدا مقداری نویز را در سیستم کدگذاری کرده و سپس آرایه‌ای متشکل از امیدریاضی اندازه‌گیری تک‌تک کیوبیت‌های سیستم را به عنوان خروجی تولید می‌کند که نتیجه‌ی نهایی الگوریتم، از این خروجی ساخته می‌شود.
+    نمایش دیداری این مدار در شکل 
+    \ref{fig:final_gen}
+    آمده است.
     
 \end{itemize}
+
+در شکل‌های این مدارها، زیرمدار
+\lr{encode\_music}
+با نام
+$EM(x)$،
+زیرمدار
+\lr{discriminator}
+با نام
+$Disc(\theta)$
+و زیرمدار
+\lr{generator}
+با نام
+$Gen(\phi)$
+مشخص شده است.
+
+
+
+\begin{figure}
+    \centering
+    \begin{quantikz}
+            \lstick[wires=3]{$\ket{0}^{\otimes n\_qubits}$} & \gate[wires=3][2cm]{EM(x)} & \gate[wires=3][2cm]{Disc(\theta)} & \qw & \meter{}  \\
+            & \qw & \qw & \qw & \meter{} \\
+            & \qw & \qw & \qw & \meter{}
+    \end{quantikz}
+    \caption{
+    نمایش دیداری مدار
+    \lr{real\_music\_discriminator}
+    }
+    \label{fig:real_disc}
+    \bigskip
+    \begin{quantikz}
+            \lstick[wires=3]{$\ket{0}^{\otimes n\_qubits}$} & \gate[wires=3][2cm]{EM(x)} & \gate[wires=3][2cm]{Gen(\phi)} &\gate[wires=3][2cm]{Disc(\theta)} & \qw & \meter{}  \\
+            & \qw & \qw & \qw & \qw & \meter{} \\
+            & \qw & \qw & \qw & \qw & \meter{}
+    \end{quantikz}
+    \caption{
+    نمایش دیداری مدار
+    \lr{generated\_music\_discriminator}
+    }
+    \label{fig:gen_disc}
+    \bigskip
+    \begin{quantikz}
+            \lstick[wires=3]{$\ket{0}^{\otimes n\_qubits}$} & \gate[wires=3][2cm]{EM(x)} & \gate[wires=3][2cm]{Gen(\phi)} & \qw & \meter{}  \\
+            & \qw & \qw & \qw & \meter{} \\
+            & \qw & \qw & \qw & \meter{}
+    \end{quantikz}
+    \caption{
+    نمایش دیداری مدار کوانتومی
+    \lr{final\_music\_generator}
+    }
+    \label{fig:final_gen}
+\end{figure}
+
 نکته‌ی اصلی این است که بعد از هربار اجرای مدارهای اول و دوم، وزن‌های زیرمدار
 \lr{discriminator}
 آن‌ها با هم همگام می‌شوند، چراکه در کل برنامه باید تنها یک
 \lr{discriminator}
 وجود داشته‌باشد.
-
-بعد از ساخته‌شدن این مدارها، با استفاده از توابع هزینه‌ی معرفی شده در معادله‌ی
-\ref{eqn:qugan_cost}
-پارامترهای زیرمدارهای 
+الگوریتم کلی اجرا شده در هنگام آموزش این ماژول، دارای چند حلقه است. در حلقه‌ی اول که
+\lr{discriminator\_iteration}
+نام دارد، در هر مرحله ابتدا با استفاده از الگوریتم گرادیان کاهشی، یک گام در بهینه‌سازی پارامترهای زیرمدار
 \lr{discriminator}
+ برداشته می‌شود، سپس پارامترهای این زیرمدار در دو مدار
+\lr{real\_music\_discriminator}
 و
+\lr{generated\_music\_discriminator}
+همگام‌سازی می‌شوند.
+در حلقه‌ی دوم که
+\lr{generator\_iteration}
+نام دارد، بهینه‌سازی پارامترهای زیرمدار 
 \lr{music\_generator}
-بهینه‌سازی می‌شوند؛ سپس پارامترهای زیرمدار
-\lr{music\_generator} 
-موجود در مدار دوم با پارامترهای مدار سوم همگام‌سازی شده و پس از پس‌پردازش خروجی‌های مدار سوم، موسیقی تولید می‌شود.
-
-\subsection{پس‌پردازش}
+انجام می‌شود و در هر مرحله از اجرای حلقه‌ی سوم، ابتدا حلقه‌ی
+\lr{discriminator\_iteration}
+و سپس حلقه‌ی
+\lr{generator\_iteration}
+اجرا می‌شوند.
+فرم شبه‌کدی این الگوریتم در الگوریتم
+\ref{alg:qugan_iteration}
+آمده است که در این الگوریتم، تابع
+\lr{sync\_disc}
+تابعی‌ست که پارامترهای موجود در زیرمدارهای
+\lr{discriminator}
+موجود در مدارهای
+\lr{real\_music\_discriminator}
+و
+\lr{generated\_music\_discriminator}
+را همگام می‌سازد.
+هم‌چنین شایان ذکر است که بهینه‌سازی پارامترها در این الگوریتم، با استفاده از توابع هزینه‌ی معرفی شده در معادله‌ی
+\ref{eqn:qugan_cost}
+انجام می‌گیرد.
 
 \begin{algorithm}[t]
-\caption{پس‌پردازش ماژول \lr{QuGAN}} \label{alg:quganpost}
+\caption{نحوه کارکرد کلی ماژول \lr{QuGAN}} \label{alg:qugan_iteration}
 \lr{
     \begin{algorithmic}
-        \STATE $raw\_model\_output_i = model(input_i)$
-        \STATE $model\_output_i = (raw\_model\_output_i + 1) * norm_i$
-        \STATE $counter = 1$
-        \WHILE {$model\_output_i \not\in mapping.keys()$}
-        \STATE $model\_output_i = model\_output_i * counter / (counter+1)$
-        \STATE $model\_output_i = model\_output_i.to\_int()$
-        \STATE $counter = counter + 1$
-        \ENDWHILE
+        \STATE real\_music\_discriminator \hso $\leftarrow$ pre-generated quantum circuit
+        \STATE generated\_music\_discriminator \hso $\leftarrow$ pre-generated quantum circuit
+        \STATE steps \hso $\leftarrow$ number of iterations for the outer loop
+        \STATE n\_iterations \hso $\leftarrow$ number of iterations for each inner loop
+        \STATE discriminator = real\_music\_discriminator.discriminator
+        \STATE generator = generated\_music\_discriminator.generator
+        \FOR {$i=0 \to steps$}
+            \FOR {$j=0 \to n\_iterations$}
+                \STATE real\_music\_discriminator.optimize$(discriminator)$
+                \STATE sync\_disc$(real\_music\_discriminator, generated\_music\_discriminator)$
+            \ENDFOR
+            \FOR {$j=0 \to n\_iterations$}
+                \STATE generated\_music\_discriminator.optimize$(generator)$
+            \ENDFOR
+        \ENDFOR
     \end{algorithmic} 
 }
 \end{algorithm}
 \myalgorithms{
-    الگوریتم پس‌پردازش ماژول
-    \lr{QuGAN}
+    نحوه کارکرد کلی ماژول \lr{QuGAN}
 }
+
+لازم به ذکر است که در این ماژول، نویزی که به مدارهای
+\lr{generated\_music\_discriminator}
+و
+\lr{final\_music\_generator}
+داده می‌شود، تعدادی نت تصادفی از مجموعه داده است.
+پس از بهینه‌سازی پارامترهای زیرمدارهای
+\lr{discriminator}
+و
+\lr{music\_generator}،
+پارامترهای زیرمدار
+\lr{music\_generator} 
+موجود در مدار 
+\lr{final\_music\_generator}
+با مدار
+\lr{generated\_music\_discriminator}
+همگام‌سازی شده و پس از پس‌پردازش خروجی‌هایی که از مدار
+\lr{final\_music\_generator}
+تولید می‌شود، به مجموعه‌ای از نت‌های موسیقی دست می‌یابیم.
+
+\subsection{پس‌پردازش}
 
 به همان دلیل ارائه شده در بخش
 \ref{sec:qlstm_post}،
@@ -127,12 +236,34 @@ $model\_output_i$
 منظور از 
 \lr{mapping}
 نیز همان نگاشت یک به یک از نت‌ها به اعداد طبیعی است.
+
 در نهایت، تابع
 \lr{generate\_notes}
 با گرفتن پارامتر
-\lr{n\_notes}،
-الگوریتم را چندین‌بار اجرا کرده، به تعداد
 \lr{n\_notes}
-نت موسیقی جدید تولید کرده و آن‌ها را در یک فایل با پسوند
+با چندین‌بار اجرای الگوریتم‌های یادگیری ماشین و پس‌پردازش، به تعداد
+\lr{n\_notes}
+نت موسیقی جدید تولید کرده و با قرار دادن فاصله‌هایی به اندازه‌ی پنجاه میلی‌ثانیه بین آن‌ها، نتایج حاصل را در یک فایل با پسوند
 \lr{midi}
 ذخیره می‌کند.
+
+
+\begin{algorithm}[t]
+\caption{پس‌پردازش ماژول \lr{QuGAN}} \label{alg:quganpost}
+\lr{
+    \begin{algorithmic}
+        \STATE $raw\_model\_output_i = model(input_i)$
+        \STATE $model\_output_i = (raw\_model\_output_i + 1) * norm_i$
+        \STATE $counter = 1$
+        \WHILE {$model\_output_i \not\in mapping.keys()$}
+        \STATE $model\_output_i = model\_output_i * counter / (counter+1)$
+        \STATE $model\_output_i = model\_output_i.to\_int()$
+        \STATE $counter = counter + 1$
+        \ENDWHILE
+    \end{algorithmic} 
+}
+\end{algorithm}
+\myalgorithms{
+    پس‌پردازش ماژول
+    \lr{QuGAN}
+}

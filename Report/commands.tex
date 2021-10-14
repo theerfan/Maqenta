@@ -24,7 +24,8 @@
 \usepackage[pagebackref=false,colorlinks,linkcolor=blue,citecolor=red]{hyperref}
 \usepackage[nameinlink]{cleveref}%capitalize,,noabbrev
 % \usepackage{polyglossia}
-
+\usepackage{tikz}
+\usetikzlibrary{quantikz}
 % \setdefaultlanguage[numerals=maghrib]{persian}
 % \setotherlanguage{english}
 
@@ -315,8 +316,10 @@
 \newlistof{myalgorithms}{algo}{\listalgorithmsname}
 \newcommand{\myalgorithms}[1]{%
 \addcontentsline{algo}{myalgorithms}{\protect\numberline{\thealgorithm}#1}\par}
+% \renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
+
 \setlength{\cftmyequationsnumwidth}{2.5em} % Width of equation number in List of Equations
-\renewcommand{\theequation}{\arabic{chapter}.\arabic{algorithm}}
+\renewcommand{\thealgorithm}{\arabic{chapter}.\arabic{algorithm}}
 
 %\renewcommand\cftsecleader{\cftdotfill{\cftdotsep}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
