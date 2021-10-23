@@ -36,9 +36,5 @@
    * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
 
 7. Current Development
-   * [ ] Change the QLSTM code such that it could be run on A GPU.
-   * [ ] Test the QLSTM code with high cutoff value and epoch number to investigate convergence.
-   * [ ] Bigger batch sizes for QLSTM? (GPU-wise)
-   * [ ] Develop the idea for QuGAN (and EQGAN?) 
-   * [ ] Add the easily module of QuGraph
+   * [ ] Develop the code for EQGAN
    * [ ] The Issue of monotony (same offset between notes). 
