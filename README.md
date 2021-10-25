@@ -36,5 +36,6 @@
    * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
 
 7. Current Development
-   * [ ] Develop the code for EQGAN
+   * [ ] Develop the code for EQGAN.
+   * [ ] Change the measurements from global to local in the QuGAN module, because it gets trapped inside a barren plateu very quickly.
    * [ ] The Issue of monotony (same offset between notes). 
