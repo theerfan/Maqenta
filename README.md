@@ -28,14 +28,14 @@
    * [x] [Learn music theory in half an hour](https://www.youtube.com/watch?v=rgaTLrZGlk0).
    * [ ] [Music And Measure Theory - 3Blue1Brown](https://www.youtube.com/watch?v=cyW5z-M2yzw).
     
- 5. Read these papers
+5. Read these papers
    * [x] [Recurrent Quantum Neural Networks](https://arxiv.org/abs/2006.14619).
    * [ ] [Generative Adversarial Networks](https://arxiv.org/abs/1406.2661).
    * [ ] [Progressive Growing of GANs for Improved Quality, Stability, and Variation](https://arxiv.org/abs/1710.10196).
    * [ ] [Adversarial Audio Synthesis](https://arxiv.org/abs/1802.04208).
    * [ ] [GANSynth: Adversarial Neural Audio Synthesis](https://arxiv.org/abs/1902.08710).
 
-7. Current Development
+6. Current Development
    * [ ] Develop the code for EQGAN.
    * [ ] Change the measurements from global to local in the QuGAN module, because it gets trapped inside a barren plateu very quickly.
    * [ ] The Issue of monotony (same offset between notes). 
