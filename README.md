@@ -39,3 +39,4 @@
    * [ ] Develop the code for EQGAN.
    * [ ] Change the measurements from global to local in the QuGAN module, because it gets trapped inside a barren plateu very quickly.
    * [ ] The Issue of monotony (same offset between notes). 
+   * [ ] Using a tunable vector `w` to be inner producted with the output of the functions, basically adding a classical layer that needs to be optimized.
