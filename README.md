@@ -40,3 +40,4 @@
    * [ ] Change the measurements from global to local in the QuGAN module, because it gets trapped inside a barren plateu very quickly.
    * [ ] The Issue of monotony (same offset between notes). 
    * [ ] Using a tunable vector `w` to be inner producted with the output of the functions, basically adding a classical layer that needs to be optimized.
+   * [ ] Cross-check to see if there's any difference in tuning a matrix to generate multiple next notes or just a vector to finding one next note.
